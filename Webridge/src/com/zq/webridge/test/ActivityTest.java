@@ -1,13 +1,13 @@
-package com.zq.webridgetest.test;
+package com.zq.webridge.test;
 
 import android.app.Instrumentation;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
 
-import com.zq.webridgetest.MainActivity;
-import com.zq.webridgetest.R;
-import com.zq.webridgetest.util.WBWebView;
-import com.zq.webridgetest.util.WBWebridge;
+import com.zq.webridge.MainActivity;
+import com.zq.webridge.R;
+import com.zq.webridge.util.WBWebView;
+import com.zq.webridge.util.WBWebridge;
 
 public class ActivityTest extends
 		ActivityInstrumentationTestCase2<MainActivity> {

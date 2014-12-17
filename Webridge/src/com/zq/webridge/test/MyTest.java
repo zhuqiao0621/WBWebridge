@@ -1,12 +1,12 @@
-package com.zq.webridgetest.test;
+package com.zq.webridge.test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import android.test.AndroidTestCase;
 
-import com.zq.webridgetest.util.UriListener;
-import com.zq.webridgetest.util.WBUri;
+import com.zq.webridge.util.UriListener;
+import com.zq.webridge.util.WBUri;
 
 public class MyTest extends AndroidTestCase {
 	public class TestUriImplement implements UriListener {

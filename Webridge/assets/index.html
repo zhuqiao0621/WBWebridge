@@ -9,20 +9,6 @@ function wbNativeToHTMLIncludeReturn() {
     return person;
 }
 
-function wbNativeToHTML(jsCommand, jsParams) {
-    var jsParamsString = JSON.stringify(jsParams);
-    var jsScript = jsCommand + '(' + jsParamsString + ')';
-    var result = eval(jsScript);
-    var isAndroid = navigator.userAgent.match('Android');
-    if (isAndroid) {
-        window.androidWebridge.returnMessage(JSON.stringify(result));
-    }
-    else {
-        // iOS or other platform
-        return result;
-    }
-}
-
 function wbCallback(object) {
     document.getElementById("name").innerHTML = object.result.name;
     document.getElementById("year").innerHTML = object.result.year;

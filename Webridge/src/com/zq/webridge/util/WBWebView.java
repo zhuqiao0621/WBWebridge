@@ -1,4 +1,4 @@
-package com.zq.webridgetest.util;
+package com.zq.webridge.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

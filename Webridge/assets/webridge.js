@@ -16,3 +16,19 @@ function wbHTMLToNative(command, params, callback) {
         // TODO: desktop
     }
 }
+
+// jsCommand 需要调用的js方法名
+// jsParams  需要调用的js方法参数
+function wbNativeToHTML(jsCommand, jsParams) {
+    var jsParamsString = JSON.stringify(jsParams);
+    var jsScript = jsCommand + '(' + jsParamsString + ')';
+    var result = eval(jsScript);
+    var isAndroid = navigator.userAgent.match('Android');
+    if (isAndroid) {
+        window.androidWebridge.returnMessage(JSON.stringify(result));
+    }
+    else {
+        // iOS or other platform
+        return result;
+    }
+}

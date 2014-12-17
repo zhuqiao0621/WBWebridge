@@ -40,7 +40,7 @@
             android:text="jsToNativeReturn" />
     </LinearLayout>
 
-    <com.zq.webridgetest.util.WBWebView
+    <com.zq.webridge.util.WBWebView
         android:id="@+id/wv"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

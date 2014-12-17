@@ -1,4 +1,4 @@
-package com.zq.webridgetest.util;
+package com.zq.webridge.util;
 
 import java.util.HashMap;
 import java.util.Map;

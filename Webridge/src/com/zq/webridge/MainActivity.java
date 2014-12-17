@@ -1,4 +1,4 @@
-package com.zq.webridgetest;
+package com.zq.webridge;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.zq.webridgetest.util.WBWebView;
+import com.zq.webridge.util.WBWebView;
 
 public class MainActivity extends Activity {
 	private WBWebView wv;
