@@ -18,7 +18,7 @@ public class WBWebridge {
 	public static final String DELEGATE_ERROR = "WebridgeDelegate exception on method: ";
 
 	private WebView mWebView;
-	private WBWebridgeImplement mImplement;
+	private WBWebridgeListener mWbWebridgeListener;
 
 	public static String testReturn;
 	public static String testJsToNative;
@@ -37,9 +37,9 @@ public class WBWebridge {
 
 	};
 
-	public WBWebridge(WebView webView, WBWebridgeImplement implement) {
+	public WBWebridge(WebView webView, WBWebridgeListener listener) {
 		mWebView = webView;
-		mImplement = implement;
+		mWbWebridgeListener = listener;
 	}
 
 	/**
@@ -73,10 +73,11 @@ public class WBWebridge {
 		Object result = null;
 		try {
 			if (TextUtils.isEmpty(parma)) {
-				result = InvokeMethod.invokeMethod(mImplement, command, null);
+				result = InvokeMethod.invokeMethod(mWbWebridgeListener,
+						command, null);
 			} else {
-				result = InvokeMethod.invokeMethod(mImplement, command,
-						new Object[] { parma });
+				result = InvokeMethod.invokeMethod(mWbWebridgeListener,
+						command, new Object[] { parma });
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

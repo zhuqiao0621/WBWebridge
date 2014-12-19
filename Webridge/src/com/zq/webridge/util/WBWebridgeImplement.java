@@ -12,7 +12,7 @@ import org.json.JSONObject;
  * @author user
  *
  */
-public class WBWebridgeImplement {
+public class WBWebridgeImplement implements WBWebridgeListener {
 	public static Map<String, String> map = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L;
 		{
