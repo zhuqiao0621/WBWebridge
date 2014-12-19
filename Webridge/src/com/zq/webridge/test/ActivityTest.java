@@ -72,6 +72,26 @@ public class ActivityTest extends
 		}, 1000);
 	}
 
+	public void testJsToNativeIBadCommand() {
+		WBWebridge.testJsToNative = null;
+		mInstrument.runOnMainSync(new Runnable() {
+
+			@Override
+			public void run() {
+				mActivity.findViewById(R.id.jsToNativeBadCommand)
+						.performClick();
+			}
+		});
+		mInstrument.waitForIdleSync();
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				assertNotNull(WBWebridge.testJsToNative);
+			}
+		}, 1000);
+	}
+
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();

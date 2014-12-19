@@ -28,6 +28,6 @@
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
         android:label="Test for my app"
-        android:targetPackage="com.zq.webridgetest" />
+        android:targetPackage="com.zq.webridge" />
 
 </manifest>

@@ -25,19 +25,18 @@
             android:text="nativeToJsReturn" />
 
         <Button
-            android:id="@+id/jsToNative"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="jsToNative"
-            android:visibility="gone" />
-
-        <Button
             android:id="@+id/jsToNativeIncludeReturn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="jsToNativeReturn" />
+
+        <Button
+            android:id="@+id/jsToNativeBadCommand"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="jsToNativeBadCommand" />
     </LinearLayout>
 
     <com.zq.webridge.util.WBWebView

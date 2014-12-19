@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						String js = "javascript:wbNativeToHTML(\"wbNativeToHTMLIncludeReturn\",\"\")";
+						String js = "javascript:wbNativeToJS(\"wbNativeToHTMLIncludeReturn\",\"\")";
 						wv.loadUrl(js);
 					}
 				});
@@ -43,7 +43,21 @@ public class MainActivity extends Activity {
 						String method = "'queryPerson'";
 						String parma = "{\"name\":\"zq\"}";
 						String callback = "'wbCallback'";
-						String js = "javascript:wbHTMLToNative(" + method + ","
+						String js = "javascript:wbJSToNative(" + method + ","
+								+ parma + "," + callback + ")";
+						wv.loadUrl(js);
+					}
+				});
+
+		findViewById(R.id.jsToNativeBadCommand).setOnClickListener(
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						String method = "'queryPerson1'";
+						String parma = "{\"name\":\"zq\"}";
+						String callback = "'wbCallback'";
+						String js = "javascript:wbJSToNative(" + method + ","
 								+ parma + "," + callback + ")";
 						wv.loadUrl(js);
 					}
