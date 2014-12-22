@@ -29,14 +29,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="jsToNativeReturn" />
+            android:text="jsToNativeReturn"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/jsToNativeBadCommand"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="jsToNativeBadCommand" />
+            android:text="jsToNativeBadCommand"
+            android:visibility="gone" />
     </LinearLayout>
 
     <com.zq.webridge.util.WBWebView

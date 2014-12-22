@@ -30,37 +30,40 @@ public class MainActivity extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						String js = "javascript:wbNativeToJS(\"wbNativeToHTMLIncludeReturn\",\"\")";
-						wv.loadUrl(js);
-					}
-				});
-
-		findViewById(R.id.jsToNativeIncludeReturn).setOnClickListener(
-				new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						String method = "'queryPerson'";
+						String method = "'jsGetPerson'";
 						String parma = "{\"name\":\"zq\"}";
-						String callback = "'wbCallback'";
-						String js = "javascript:wbJSToNative(" + method + ","
-								+ parma + "," + callback + ")";
+						String js = "javascript:wbNativeToJS(" + method + ","
+								+ parma + ")";
 						wv.loadUrl(js);
 					}
 				});
 
-		findViewById(R.id.jsToNativeBadCommand).setOnClickListener(
-				new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						String method = "'queryPerson1'";
-						String parma = "{\"name\":\"zq\"}";
-						String callback = "'wbCallback'";
-						String js = "javascript:wbJSToNative(" + method + ","
-								+ parma + "," + callback + ")";
-						wv.loadUrl(js);
-					}
-				});
+		// findViewById(R.id.jsToNativeIncludeReturn).setOnClickListener(
+		// new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// String method = "'queryPerson'";
+		// String parma = "{\"name\":\"zq\"}";
+		// String callback = "'wbCallback'";
+		// String js = "javascript:wbJSToNative(" + method + ","
+		// + parma + "," + callback + ")";
+		// wv.loadUrl(js);
+		// }
+		// });
+		//
+		// findViewById(R.id.jsToNativeBadCommand).setOnClickListener(
+		// new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// String method = "'queryPerson1'";
+		// String parma = "{\"name\":\"zq\"}";
+		// String callback = "'wbCallback'";
+		// String js = "javascript:wbJSToNative(" + method + ","
+		// + parma + "," + callback + ")";
+		// wv.loadUrl(js);
+		// }
+		// });
 	}
 }

@@ -1,5 +1,7 @@
 package com.zq.webridge.util;
 
+import com.zq.webridge.WBWebridgeImplement;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +40,8 @@ public class WBWebView extends WebView {
 		webSettings.setSupportZoom(false);
 
 		// JS_NAME是自己定义的，供javascript访问的接口
-		addJavascriptInterface(new WBWebridge(this, new WBWebridgeImplement()),
-				JS_NAME);
+		addJavascriptInterface(new WBWebridge(this, new WBWebridgeImplement(
+				mContext)), JS_NAME);
 
 		setWebViewClient(new WebViewClient() {
 
