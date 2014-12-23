@@ -29,7 +29,12 @@ public class InvokeMethod {
 				if (args[i] instanceof AsynExecuteCommandListener) {
 					Class interfaces[] = argclass[i].getInterfaces();
 					if (interfaces != null && interfaces.length > 0) {
-						argclass[i] = interfaces[0];
+						for (Class inter : interfaces) {
+							if (inter.getName().contains("AsynExecuteCommandListener")) {
+								argclass[i] = interfaces[0];
+								break;
+							}
+						}
 					}
 				}
 			}

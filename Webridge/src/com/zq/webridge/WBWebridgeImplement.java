@@ -26,6 +26,7 @@ public class WBWebridgeImplement implements WBWebridgeListener {
 			putContact(this, 0);
 			putContact(this, 1);
 			putContact(this, 2);
+			putContact(this, 3);
 		}
 	};
 
@@ -35,15 +36,23 @@ public class WBWebridgeImplement implements WBWebridgeListener {
 			if (index == 0) {
 				obj.put("name", "Jacky");
 				obj.put("phone", "13800000000");
+				obj.put("birthday", "06-21");
 				object.put("Jacky", obj);
 			} else if (index == 1) {
 				obj.put("name", "Tracy");
 				obj.put("phone", "18210001000");
+				obj.put("birthday", "03-30");
 				object.put("Tracy", obj);
 			} else if (index == 2) {
 				obj.put("name", "John");
 				obj.put("phone", "18800010001");
+				obj.put("birthday", "03-16");
 				object.put("John", obj);
+			} else if (index == 3) {
+				obj.put("name", "");
+				obj.put("phone", "");
+				obj.put("birthday", "");
+				object.put("unknow", obj);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -74,6 +83,10 @@ public class WBWebridgeImplement implements WBWebridgeListener {
 			String name = parmaObj.optString("name");
 			if (contacts.has(name)) {
 				return contacts.getJSONObject(name).toString();
+			} else {
+				final JSONObject object = contacts.getJSONObject("unknow");
+				object.put("name", name);
+				return object.toString();
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
