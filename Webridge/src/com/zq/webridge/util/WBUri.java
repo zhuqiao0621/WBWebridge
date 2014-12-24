@@ -15,9 +15,9 @@ import android.text.TextUtils;
  */
 public class WBUri {
 	private Context mContext;
-	private UriListener mListener;
+	private WebUriListener mListener;
 
-	public WBUri(Context context, UriListener listener) {
+	public WBUri(Context context, WebUriListener listener) {
 		mContext = context;
 		mListener = listener;
 		if (mContext == null) {

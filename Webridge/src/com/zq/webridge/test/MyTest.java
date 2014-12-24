@@ -5,11 +5,11 @@ import java.util.List;
 
 import android.test.AndroidTestCase;
 
-import com.zq.webridge.util.UriListener;
+import com.zq.webridge.util.WebUriListener;
 import com.zq.webridge.util.WBUri;
 
 public class MyTest extends AndroidTestCase {
-	public class TestUriImplement implements UriListener {
+	public class TestUriImplement implements WebUriListener {
 		public int uriStatus;
 		public int commandStatus;
 

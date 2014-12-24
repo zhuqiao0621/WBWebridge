@@ -11,7 +11,7 @@ import java.util.List;
  * @兼容HTTP格式 http://[host]/[scheme]/[command]/[param1]/[param2]/[param3]
  *
  */
-public interface UriListener {
+public interface WebUriListener {
 	/**
 	 * 方案，默认slate
 	 * 

@@ -66,18 +66,21 @@ public class WBWebridgeImplement implements WBWebridgeListener {
 	}
 
 	// ======================js调用的native方法======================
-	public void nativeGetPhoneContacts(String parma,
-			AsynExecuteCommandListener listener) {
+	public void nativeGetPhoneContacts(AsynExecuteCommandListener listener) {
 		if (listener != null) {
 			listener.onCallBack(contacts.toString());
 		}
 	}
 
-	public String nativeGetPhoneContacts(String parma) {
+	public String nativeGetPhoneContacts() {
 		return contacts.toString();
 	}
 
-	public String nativeGetPerson(String parma) {
+	public String nativeGetPerson(JSONObject parmaObject) {
+		if (JSONObject.NULL.equals(parmaObject)) {
+			return "";
+		}
+		String parma = parmaObject.toString();
 		try {
 			JSONObject parmaObj = new JSONObject(parma);
 			String name = parmaObj.optString("name");
@@ -97,6 +100,24 @@ public class WBWebridgeImplement implements WBWebridgeListener {
 	public void nativeShowAlert(String parma) {
 		Builder build = new AlertDialog.Builder(mContext);
 		build.setMessage(parma);
+		build.setNegativeButton("确定", new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		build.create().show();
+	}
+
+	// ======================native调用的js方法======================
+	public void nativeToJSCallbackDialog(JSONObject resultObject) {
+		if (JSONObject.NULL.equals(resultObject)) {
+			return;
+		}
+		Builder build = new AlertDialog.Builder(mContext);
+		build.setTitle("收到来自js的返回值");
+		build.setMessage(resultObject.toString());
 		build.setNegativeButton("确定", new OnClickListener() {
 
 			@Override

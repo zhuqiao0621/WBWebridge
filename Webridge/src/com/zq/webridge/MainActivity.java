@@ -1,5 +1,7 @@
 package com.zq.webridge;
 
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
@@ -30,40 +32,25 @@ public class MainActivity extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						String method = "'jsGetPerson'";
-						String parma = "{\"name\":\"zq\"}";
-						String js = "javascript:wbNativeToJS(" + method + ","
-								+ parma + ")";
-						wv.loadUrl(js);
+						try {
+							testNativeToJs();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				});
+	}
 
-		// findViewById(R.id.jsToNativeIncludeReturn).setOnClickListener(
-		// new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// String method = "'queryPerson'";
+	private void testNativeToJs() throws Exception {
+		// String method = "'jsGetPerson'";
+		JSONObject parma = new JSONObject();
+		parma.put("name", "zq");
 		// String parma = "{\"name\":\"zq\"}";
-		// String callback = "'wbCallback'";
-		// String js = "javascript:wbJSToNative(" + method + ","
-		// + parma + "," + callback + ")";
+		// String js = "javascript:wbNativeToJS(" + method + ","
+		// + parma + ")";
 		// wv.loadUrl(js);
-		// }
-		// });
-		//
-		// findViewById(R.id.jsToNativeBadCommand).setOnClickListener(
-		// new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// String method = "'queryPerson1'";
-		// String parma = "{\"name\":\"zq\"}";
-		// String callback = "'wbCallback'";
-		// String js = "javascript:wbJSToNative(" + method + ","
-		// + parma + "," + callback + ")";
-		// wv.loadUrl(js);
-		// }
-		// });
+
+		wv.getWebridge().nativeToJs("wbTest.jsGetPerson", parma,
+				"nativeToJSCallbackDialog");
 	}
 }

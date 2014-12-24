@@ -1,7 +1,5 @@
 package com.zq.webridge.util;
 
-import com.zq.webridge.WBWebridgeImplement;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -12,11 +10,15 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.zq.webridge.WBWebridgeImplement;
+import com.zq.webridge.WebUriImplement;
+
 public class WBWebView extends WebView {
 	private static final String JS_NAME = "androidWebridge";
 
 	private Context mContext;
 	private WBUri mWbUri;
+	private WBWebridge mWebridge;
 
 	public WBWebView(Context context) {
 		this(context, null);
@@ -30,7 +32,7 @@ public class WBWebView extends WebView {
 
 	@SuppressLint("SetJavaScriptEnabled")
 	private void init() {
-		mWbUri = new WBUri(mContext, new UriImplement(mContext));
+		mWbUri = new WBUri(mContext, new WebUriImplement(mContext));
 
 		WebSettings webSettings = getSettings();
 
@@ -40,8 +42,8 @@ public class WBWebView extends WebView {
 		webSettings.setSupportZoom(false);
 
 		// JS_NAME是自己定义的，供javascript访问的接口
-		addJavascriptInterface(new WBWebridge(this, new WBWebridgeImplement(
-				mContext)), JS_NAME);
+		mWebridge = new WBWebridge(this, new WBWebridgeImplement(mContext));
+		addJavascriptInterface(mWebridge, JS_NAME);
 
 		setWebViewClient(new WebViewClient() {
 
@@ -65,4 +67,9 @@ public class WBWebView extends WebView {
 			}
 		});
 	}
+
+	public WBWebridge getWebridge() {
+		return mWebridge;
+	}
+
 }

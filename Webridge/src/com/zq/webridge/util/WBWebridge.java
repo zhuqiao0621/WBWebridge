@@ -3,13 +3,10 @@ package com.zq.webridge.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.webkit.WebView;
 
 public class WBWebridge {
@@ -30,6 +27,9 @@ public class WBWebridge {
 	private WebView mWebView;
 	private WBWebridgeListener mWbWebridgeListener;
 
+	private int mNativeSequence = 0;// native调用js之后，如果需要js回调本地方法，那么生成本地方法序号(因为js可能是异步的，可能会导致错乱)
+	private SparseArray<String> mNativeCommands = new SparseArray<String>();// native调用js之后，如果需要js回调本地方法，那么把本地方法名加入进去
+
 	public static String testReturn;
 	public static String testJsToNative;
 
@@ -41,6 +41,7 @@ public class WBWebridge {
 				if (msg.obj instanceof String) {
 					mWebView.loadUrl((String) msg.obj);
 					testJsToNative = (String) msg.obj;
+					System.out.println("jsToNativeCallBack:" + testJsToNative);
 				}
 			}
 		}
@@ -60,6 +61,8 @@ public class WBWebridge {
 	 */
 	public void postMessage(String json) {
 		System.out.println("postMessage:" + json);
+		// {"eval":{"command":"nativeGetPerson","params":{"name":"John"},"sequence":1}}
+
 		JSONObject obj = null;
 		try {
 			obj = new JSONObject(json);
@@ -69,12 +72,32 @@ public class WBWebridge {
 		if (obj == null) {
 			return;
 		}
+
+		JSONObject evalObj = obj.optJSONObject("eval");
+		if (evalObj == null) {
+			return;
+		}
+
+		jsToNative(evalObj);
+	}
+
+	/**
+	 * js调用native放阿飞
+	 * 
+	 * @param evalObj
+	 */
+	private void jsToNative(final JSONObject evalObj) {
 		// 需要执行的native方法名
-		final String command = obj.optString("command");
+		final String command = evalObj.optString("command");
 		// 需要执行的native方法参数
-		final String parma = obj.optString("params");
-		// 执行完native方法需要调用的js方法名(js参数是native方法的返回值)
-		final String callback = obj.optString("callback");
+		Object params = evalObj.opt("params");
+		if (JSONObject.NULL.equals(params)) {
+			params = null;
+		}
+		final Object parmaObj = params;
+		// 调用的序号，用于找到对应的js回调函数(js会自动根据sequence去找对应的方法);如果sequence=-1，那么不需要再给js
+		// callback了
+		final int sequence = evalObj.optInt("sequence", -1);
 
 		// NOTE 请求原生方法
 		// 优先使用异步方法
@@ -82,9 +105,9 @@ public class WBWebridge {
 
 			@Override
 			public void run() {
-				if (!asyncExecuteForCommand(command, parma, callback)) {
+				if (!asyncExecuteForCommand(command, parmaObj, sequence)) {
 					// 异步方法请求失败，调用同步方法
-					executeForCommand(command, parma, callback);
+					executeForCommand(command, parmaObj, sequence);
 				}
 			}
 		});
@@ -95,14 +118,14 @@ public class WBWebridge {
 	 * 
 	 * @param command
 	 *            本地方法名
-	 * @param parma
+	 * @param parmaObj
 	 *            本地方法参数
-	 * @param callback
-	 *            回调的js方法名
+	 * @param sequence
+	 *            回调的js方法序号
 	 * @return
 	 */
-	private boolean asyncExecuteForCommand(final String command, String parma,
-			final String callback) {
+	private boolean asyncExecuteForCommand(final String command,
+			Object parmaObj, final int sequence) {
 		if (TextUtils.isEmpty(command)) {
 			return false;
 		}
@@ -112,16 +135,16 @@ public class WBWebridge {
 			@Override
 			public void onCallBack(Object result) {
 				System.out.println("异步执行");
-				onFetchResult(result, command, callback);
+				onFetchResult(result, command, sequence);
 			}
 		};
 		try {
-			if (TextUtils.isEmpty(parma)) {
+			if (parmaObj == null) {
 				InvokeMethod.invokeMethod(mWbWebridgeListener, command,
 						new Object[] { listener });
 			} else {
 				InvokeMethod.invokeMethod(mWbWebridgeListener, command,
-						new Object[] { parma, listener });
+						new Object[] { parmaObj, listener });
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -136,57 +159,57 @@ public class WBWebridge {
 	 * 
 	 * @param command
 	 *            本地方法名
-	 * @param parma
+	 * @param parmaObj
 	 *            本地方法参数
-	 * @param callback
-	 *            回调的js方法名
+	 * @param sequence
+	 *            回调的js方法序号
 	 * @return
 	 */
-	private void executeForCommand(String command, String parma, String callback) {
+	private void executeForCommand(String command, Object parmaObj, int sequence) {
 		// NOTE 请求原生方法
 		if (TextUtils.isEmpty(command)) {
-			callbackJs(callback, "", COMMAND_ERROR + command);
+			callbackJs(sequence, "", COMMAND_ERROR + command);
 			return;
 		}
 		Object result = null;
 		try {
-			if (TextUtils.isEmpty(parma)) {
+			if (parmaObj == null) {
 				result = InvokeMethod.invokeMethod(mWbWebridgeListener,
 						command, null);
 			} else {
 				result = InvokeMethod.invokeMethod(mWbWebridgeListener,
-						command, new Object[] { parma });
+						command, new Object[] { parmaObj });
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			callbackJs(callback, "", COMMAND_ERROR + command);
+			callbackJs(sequence, "", COMMAND_ERROR + command);
 			return;
 		}
 
 		// NOTE 请求js方法
 		System.out.println("同步执行");
-		onFetchResult(result, command, callback);
+		onFetchResult(result, command, sequence);
 	}
 
 	/**
 	 * 拿到本地方法返回值，请求js方法
 	 * 
 	 * @param result
-	 * @param callback
+	 * @param sequence
 	 * @param command
 	 */
-	private void onFetchResult(Object result, String command, String callback) {
-		if (TextUtils.isEmpty(callback))
+	private void onFetchResult(Object result, String command, int sequence) {
+		if (sequence == -1)
 			return;
 		if (!(result instanceof String)) {
-			callbackJs(callback, "", DELEGATE_ERROR + command);
+			callbackJs(sequence, "", DELEGATE_ERROR + command);
 		} else {
 			try {
 				new JSONObject(result.toString());
-				callbackJs(callback, result.toString(), "");
+				callbackJs(sequence, result.toString(), "");
 			} catch (Exception e) {
 				e.printStackTrace();
-				callbackJs(callback, "", DELEGATE_ERROR + command);
+				callbackJs(sequence, "", DELEGATE_ERROR + command);
 			}
 		}
 	}
@@ -194,38 +217,28 @@ public class WBWebridge {
 	/**
 	 * 创建回调js
 	 * 
-	 * @param callback
-	 *            回调的js方法名称
+	 * @param sequence
+	 *            回调的js方法序号
 	 * @param nativeReturnJson
 	 *            回调的js方法参数
 	 * @param errorMsg
 	 *            错误信息
 	 * @return
 	 */
-	private void callbackJs(String callback, String nativeReturnJson,
+	private void callbackJs(int sequence, String nativeReturnJson,
 			String errorMsg) {
-		if (TextUtils.isEmpty(callback))
+		if (sequence == -1)
 			return;
-		String js = "javascript:" + callback;
-		JSONObject resultObj = new JSONObject();
-		try {
-			if (!TextUtils.isEmpty(errorMsg)) {
-				resultObj.put("result", "");
-				resultObj.put("error", errorMsg);
-				js += "(" + resultObj.toString() + ")";
-			} else if (TextUtils.isEmpty(nativeReturnJson)) {
-				// 没有参数
-				js += "()";
-			} else {
-				JSONObject obj = new JSONObject(nativeReturnJson);
-				resultObj.put("result", obj);
-				resultObj.put("error", "");
-				js += "(" + resultObj.toString() + ")";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			js += "()";
+		String js = "javascript:webridge.jsToNativeCallback(" + sequence + ",";
+		if (!TextUtils.isEmpty(errorMsg)) {
+			js += "\"\"" + "," + "\"" + errorMsg + "\"";
+		} else if (TextUtils.isEmpty(nativeReturnJson)) {
+			js += "\"\"" + "," + "\"\"";
+		} else {
+			js += nativeReturnJson;
+			js += "," + "\"\"";
 		}
+		js += ")";
 
 		Message msg = new Message();
 		msg.what = CALL_JS;
@@ -235,6 +248,49 @@ public class WBWebridge {
 
 	// ==============================native调用js==============================
 	/**
+	 * 本地调用js方法
+	 * 
+	 * @param jsCommand
+	 *            js方法名
+	 * @param jsParmas
+	 *            js方法参数
+	 * @param command
+	 *            需要获取js返回值的本地方法
+	 */
+	public synchronized void nativeToJs(String jsCommand, Object jsParmas,
+			String command) {
+		if (TextUtils.isEmpty(jsCommand)) {
+			return;
+		}
+		String js = "javascript:webridge.nativeToJS(";
+		js += "\"" + jsCommand + "\"" + ",";
+		if (jsParmas == null) {
+			js += "\"\"";
+		} else {
+			js += jsParmas.toString();
+		}
+		js += ",";
+		if (TextUtils.isEmpty(command)) {
+			js += -1;
+		} else {
+			mNativeSequence++;
+			mNativeCommands.put(mNativeSequence, command);
+			js += mNativeSequence;
+		}
+		js += ")";
+		System.out.println("nativeToJs:" + js);
+
+		final String loadJs = js;
+		mHandler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				mWebView.loadUrl(loadJs);
+			}
+		});
+	}
+
+	/**
 	 * 调用js，js返回结果调用的native方法名
 	 * 
 	 * @param json
@@ -242,26 +298,62 @@ public class WBWebridge {
 	public void returnMessage(final String json) {
 		System.out.println("returnMessage:" + json);
 		testReturn = json;
+
+		JSONObject obj = null;
+		try {
+			obj = new JSONObject(json);
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		if (obj == null) {
+			return;
+		}
+
+		JSONObject returnObj = obj.optJSONObject("return");
+		if (returnObj == null) {
+			return;
+		}
+
+		nativeToJSCallback(returnObj);
+	}
+
+	/**
+	 * 本地调用js方法,并且收到js回调
+	 * 
+	 * @param result
+	 */
+	private void nativeToJSCallback(JSONObject returnObj) {
+		int sequence = returnObj.optInt("sequence", -1);
+		Object result = returnObj.opt("result");
+		if (sequence <= 0) {
+			return;
+		}
+		if (JSONObject.NULL.equals(result)) {
+			result = null;
+		}
+		final Object resultObj = result;
+		final String command = mNativeCommands.get(sequence, "");
+		if (TextUtils.isEmpty(command)) {
+			return;
+		}
+		mNativeCommands.delete(sequence);
 		mHandler.post(new Runnable() {
 
 			@Override
 			public void run() {
-				showDialog(json);
+				try {
+					if (resultObj == null) {
+						InvokeMethod.invokeMethod(mWbWebridgeListener, command,
+								null);
+					} else {
+						InvokeMethod.invokeMethod(mWbWebridgeListener, command,
+								new Object[] { resultObj });
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}
-
-	private void showDialog(String result) {
-		Builder build = new AlertDialog.Builder(mWebView.getContext());
-		build.setTitle("收到来自js的返回值");
-		build.setMessage(result);
-		build.setNegativeButton("确定", new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
-		build.create().show();
-	}
+	
 }

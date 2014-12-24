@@ -1,7 +1,9 @@
-package com.zq.webridge.util;
+package com.zq.webridge;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.zq.webridge.util.WebUriListener;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -15,10 +17,10 @@ import android.content.DialogInterface.OnClickListener;
  * @author user
  *
  */
-public class UriImplement implements UriListener {
+public class WebUriImplement implements WebUriListener {
 	private Context mContext;
 
-	public UriImplement(Context context) {
+	public WebUriImplement(Context context) {
 		mContext = context;
 	}
 
